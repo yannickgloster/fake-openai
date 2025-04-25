@@ -68,7 +68,7 @@ async def stream_generator(data: list):
 def read_root():
     return "Server is running"
 
-TIME_TILL_FIRST_CHUNK = 1
+TIME_TILL_FIRST_CHUNK = 15
 TIME_BETWEEN_CHUNKS = 0.1
 
 @app.post("/v1/chat/completions")
