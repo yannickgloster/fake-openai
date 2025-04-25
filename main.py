@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, BackgroundTasks
 from fastapi.responses import StreamingResponse
 
 app = FastAPI()
@@ -64,6 +64,11 @@ async def stream_generator(data: list):
             await asyncio.sleep(TIME_BETWEEN_CHUNKS)
     logging.info("Done streaming")
 
+async def background_task():
+    logging.info("Starting background task")
+    await asyncio.sleep(5)
+    logging.info("Background task completed")
+
 @app.get("/")
 def read_root():
     return "Server is running"
@@ -79,7 +84,7 @@ async def chat_completions(request: Request):
         logging.info(f"Waiting {TIME_TILL_FIRST_CHUNK} seconds before streaming first and second chunk")
         logging.info(f"Waiting {TIME_BETWEEN_CHUNKS} seconds between subsequent chunks")
         await asyncio.sleep(TIME_TILL_FIRST_CHUNK)
-        return StreamingResponse(stream_generator(streaming_response), media_type="text/event-stream")
+        return StreamingResponse(stream_generator(streaming_response), media_type="text/event-stream", background=BackgroundTasks([background_task]))
     else:
         return Response(content=json.dumps(response), media_type="application/json")
 
